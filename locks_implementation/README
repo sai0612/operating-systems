@@ -1,0 +1,277 @@
+####OPERATING SYSTEMS- PA2
+
+#####GROUP MEMBERS:
+Navya Ganta \
+Sai Pratyusha Attanti
+
+####TEST CASES:
+test.cpp file contains testcases for testing the locks, conditional variables, spin locks.
+
+For testing the test cases:
+1. If you want to run test.cpp file, update the main.o with test.o in the Makefile.
+2. Run ```make``` to compile the program
+3. For running test case file test.cpp
+          ```./uthread-sync-demo``` \
+   Running this command will prompt us to enter the test case number we want to run. Please number the desired test case number.
+
+
+#####Test case 1:
+Testing Mutex lock's Lock() and Unlock() functions: This testcase tests the Mutex lock functionality. For this we are creating 4 threads and all of them wants to access the same critical sections. So each thread before entering the critical section calls the Lock() function for acquiring the lock, if no other thread has already acquired the lock the requesting thread will be made the owner of the thread. If the other threads wants to enter the critical section they should wait until lock is released by other thread.\
+Suppose if thread-1 enters the critical section, then it cannot be preempted and other threads thread-2,thread-2, thread-4 wait in a queue to enter the critical section.
+```
+attan005@csel-vole-17:/home/attan005/Documents/project2-release-final $ ./uthread-sync-demo
+Enter 1 to test mutex locks
+Enter 2 to test spin locks
+Enter 3 to test condVar wait and signal mechanism
+Enter 4 to test condVar broadcast mechanism
+Enter 5 to test Hoarse semantics in condVar locks
+Please Enter the test case number: 1
+Thread 1 is created
+Thread 2 is created
+Thread 3 is created
+Thread 4 is created
+Main Thread joining on Thread 1
+
+Thread 1 says Hi!!!!!
+Thread 1 entered critical section
+Thread 1 completed critical section
+
+Thread 2 says Hi!!!!!
+Thread 2 entered critical section
+Thread 2 completed critical section
+
+Thread 3 says Hi!!!!!
+Thread 3 entered critical section
+Thread 3 completed critical section
+
+Thread 4 says Hi!!!!!
+Thread 4 entered critical section
+Thread 4 completed critical section
+Main Thread joining on Thread 2
+Main Thread joining on Thread 3
+Main Thread joining on Thread 4
+```
+From the above you can see the FIFO pattern and a thread is not preempted until it releases the lock and leaves the critical section.
+
+#####Test case 2:
+Testing Spin Lock's Lock() and Unlock() functions: This testcase tests the spin lock functionality.\
+For this we created 4 threads, and all of them wants to use the same critical section. If a thread is in the critical section all the other threads wishing to enter the critical section will wait in the while loop, and once the lock is released it is given to any one thread that is waiting for the lock.
+```
+attan005@csel-vole-17:/home/attan005/Documents/project2-release-final $ ./uthread-sync-demo
+Enter 1 to test mutex locks
+Enter 2 to test spin locks
+Enter 3 to test condVar wait and signal mechanism
+Enter 4 to test condVar broadcast mechanism
+Enter 5 to test Hoarse semantics in condVar locks
+Please Enter the test case number: 2
+Thread 1 is created
+Thread 2 is created
+Thread 3 is created
+Thread 4 is created
+Main Thread joining on Thread 1
+
+Thread 1 says Hi!!!!!
+Thread 1 entered critical section
+Thread 1 completed critical section
+
+Thread 2 says Hi!!!!!
+Thread 2 entered critical section
+Thread 2 completed critical section
+
+Thread 3 says Hi!!!!!
+Thread 3 entered critical section
+Thread 3 completed critical section
+
+Thread 4 says Hi!!!!!
+Thread 4 entered critical section
+Thread 4 completed critical section
+Main Thread joining on Thread 2
+Main Thread joining on Thread 3
+Main Thread joining on Thread 4
+```
+
+#####Test case 3:
+Testing wait() and signal() functions: This testcase tests the CondVar wait() and signal() functionality.\
+In this testcase, 2 threads are created. thread-1 is made to call the wait() so it releases the lock it is acquiring and waits for the signal. Thread-2 calls signal(), so now thread-1 immediately gets the lock(Hoare semantics), completes its critical section and control will be again given back to thread-2
+
+```
+attan005@csel-vole-17:/home/attan005/Documents/project2-release-final $ ./uthread-sync-demo
+Enter 1 to test mutex locks
+Enter 2 to test spin locks
+Enter 3 to test condVar wait and signal mechanism
+Enter 4 to test condVar broadcast mechanism
+Enter 5 to test Hoarse semantics in condVar locks
+Please Enter the test case number: 3
+Thread 1 is created
+Thread 2 is created
+Main Thread joining on Thread 1
+
+Thread 1 says Hi!!!!!
+Thread 1 waiting for condvar lock
+
+Thread 2 says Hi!!!!!
+Thread 2 changed c value to 1
+Thread 2 sending signal to another thread
+Thread 1 received signal and started working
+Thread 1 changed c value to 0
+Thread 2 received control back
+Main Thread joining on Thread 2
+```
+In the above output you can see that, thread-1 is waiting until it receives a signal from the thread-2, Once it receives the signal it will start executing.
+
+####Test case:4
+Testing wait() and broadcast() functions: To test this we created 4 threads, and 3 threads are made to wait and the thread-4 makes a broadcast call. 
+
+```
+attan005@csel-vole-17:/home/attan005/Documents/project2-release-final $ ./uthread-sync-demo
+Enter 1 to test mutex locks
+Enter 2 to test spin locks
+Enter 3 to test condVar wait and signal mechanism
+Enter 4 to test condVar broadcast mechanism
+Enter 5 to test Hoarse semantics in condVar locks
+Please Enter the test case number: 4
+Thread 1 is created
+Thread 2 is created
+Thread 3 is created
+Thread 4 is created
+Main Thread joining on Thread 1
+
+Thread 1 says Hi!!!!!
+Thread 1 waiting for condvar lock
+
+Thread 2 says Hi!!!!!
+Thread 2 waiting for condvar lock
+
+Thread 3 says Hi!!!!!
+Thread 3 waiting for condvar lock
+
+Thread 4 says Hi!!!!!
+Thread 4 changed c value to 1
+Thread 4 sending broadcast signal to other threads
+Thread 1 received signal and started working
+Thread 1 changed c value to 0
+Thread 2 received signal and started working
+Thread 2 changed c value to -1
+Thread 3 received signal and started working
+Thread 3 changed c value to -2
+Thread 4 received control back
+Main Thread joining on Thread 2
+Main Thread joining on Thread 3
+Main Thread joining on Thread 4
+```
+As we can see from the above output thread-1, thread-2, thread-3 are waiting for the signal. After thread-4 makes a broadcast call, all the thread waiting on CondVar will receive the signal and will get executed in FIFO manner.
+
+####Test case:5
+Testing Hoare Semantics: 
+
+```
+attan005@csel-vole-17:/home/attan005/Documents/project2-release-final $ ./uthread-sync-demo
+Enter 1 to test mutex locks
+Enter 2 to test spin locks
+Enter 3 to test condVar wait and signal mechanism
+Enter 4 to test condVar broadcast mechanism
+Enter 5 to test Hoarse semantics in condVar locks
+Please Enter the test case number: 5
+Thread 1 is created
+Thread 2 is created
+Thread 3 is created
+Thread 4 is created
+Main Thread joining on Thread 1
+
+Thread 1 says Hi!!!!!
+Thread 1 waiting for condvar lock
+
+Thread 2 says Hi!!!!!
+Thread 2 waiting for condvar lock
+
+Thread 3 says Hi!!!!!
+Thread 3 changed c value to 1
+Thread 3 sending signal to another thread
+Thread 1 received signal and started working
+Thread 1 changed c value to 0
+Thread 3 received control back
+
+Thread 4 says Hi!!!!!
+Thread 4 changed c value to 1
+Thread 4 sending signal to another thread
+Thread 2 received signal and started working
+Thread 2 changed c value to 0
+Thread 4 received control back
+Main Thread joining on Thread 2
+Main Thread joining on Thread 3
+Main Thread joining on Thread 4
+```
+As you can see in the above output, Thread-1 and Thread-2 is made to wait for the signal. When Thread-3 signals the Thread-1 takes over the lock, completes the critical section and control gets back to the Thread-3.
+Similarly when Thread-4 signals, control is handed over to Thread-2, after Thread-2 critical section completion Thread-4 gets back the control. We can see this follows Hoare Semantics.
+
+
+#### PRIORITY INVERSION:
+Priority Inversion occurs when a low priority thread is holding a thread and a high priority thread is waiting for a lock, but a medium priority process get to run before high priority process.
+
+test_priority_inversion.cpp file contains testcases for testing priority inversion solution.
+
+For testing the test cases:
+1. If you want to run test_priority_inversion.cpp file, update the main.o with test_priority_inversion.o in the Makefile.
+2. Run ```make``` to compile the program
+3. For running test case file test.cpp
+          ```./uhread-demo-sync``` 
+
+Priority Inversion Solution: 
+1. When a thread yields we check if it is holding any lock and if there is any higher priority thread waiting in the ready queue, then we increase the priority of the current thread to high priority.\
+2. If the current yielding thread is not holding any locks, and if its priority has increased before we decrease its priority to the original value.
+
+To test we created a priority inversion scenario with 4 threads. First a low priority thread that wants to execute the critical section is created, made to yield and then a high priority thread that also wants to execute the critical is created. Now the high priority process will be waiting for the lock while the low priority process is in the critical section. Now one medium, one high priority processes that doesn't need to execute the critical section are created. This is a perfect example of priority Inversion. 
+
+```
+attan005@csel-vole-17:/home/attan005/Documents/project2-release-final $ ./uthread-sync-demo
+Thread 1 is created
+
+Thread 1 says Hi!!!!!
+Thread 1 entered critical section
+Thread 1 completed critical section
+Thread 2 is created
+Thread 3 is created
+Thread 4 is created
+Main Thread joining on Thread 1
+Main Thread joining on Thread 2
+
+Thread 2 says Hi!!!!!
+Thread 2 entered critical section
+Thread 2 completed critical section
+
+Thread 4 says Hi!!!!!
+
+Thread 3 says Hi!!!!!
+Main Thread joining on Thread 3
+Main Thread joining on Thread 4
+```
+
+Low Priority thread : Thread-1 \
+High Priority thread : Thread-2, Thread-4 \
+Medium Priority thread : Thread-3 
+
+Thread-1 with low priority first acquired the lock. When Thread-2 with high priority is created it waits for the lock. Meanwhile medium priority thread-3 is created it is not preempting the thread-1 as the thread-1 priority is increased. Once the thread-1 releases the lock, since thread-2 has high priority it will get executed. 
+
+
+####COMPARISON BETWEEN SPIN LOCKS AND MUTEX LOCKS
+
+test_spin_vs_mutex.cpp file contains the code for comparing the performance between spin lock and mutex lock.
+For running this file:
+1. If you want to run test_spin_vs_mutex.cpp file, update the main.o with test_spin_vs_mutex.o in the Makefile.
+2. Run ```make``` to compile the program
+3. For running test case file test.cpp
+          ```./uhread-demo-sync``` 
+
+####Performance Comparison:
+In this experiment we compared the time taken by spin lock and the mutex lock with different critical section loads for 99 threads.
+
+![img_1.png](img_1.png)
+
+As we can see in the graph above when critical section load is less spin locks are performing better as context switching overhead in mutex locks maybe more than the time the spin look spends in while loop.
+but when critical section load is increased mutex locks are performing better because the spin locks might need to keep running in the while loop for more time till they get the lock.
+
+![img_3.png](img_3.png)
+
+As the critical section load is increased, there is a drastic increase in the time taken by the spin lock.
+
+In the multicore system, both the locks show the same pattern as shown above. Even though we have multiple cores, when the critical section load is high, spin locks waste CPU cycles by waiting in the while loop which is an overhead when compared to mutex locks context switching.
